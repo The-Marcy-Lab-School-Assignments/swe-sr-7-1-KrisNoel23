@@ -17,7 +17,7 @@ Explain how the useState hook is used in React to manage state within functional
 ### Response 2
 
 The useState hook in React is used to manage state within functional components, allowing components to store and update data that affects their rendering. It takes an initial state as an argument and returns an array with two elements: the current state value and a function to update the state. 
-
+```
 import { useState } from "react";
 
 function Counter() {
@@ -33,7 +33,7 @@ function Counter() {
 }
 
 export default Counter;
-
+```
 One of the reasons managing state is important in building is interactivity, components need to react to user actions, like button clicks or form inputs.
 
 Another reason is that Dynamic UI Updates State changes trigger re-renders, ensuring that the UI stays up-to-date.
