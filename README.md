@@ -47,6 +47,42 @@ Describe the different ways the useEffect hook can be triggered in a React compo
 
 ### Response 3
 
+The useEffect hook in React is a tool that lets you run some code after your component has rendered. It’s like saying, "After the component is on the screen, do this." How often that code runs depends on what you put in the dependency array. Here are the different ways you can use it:
+
+If you don't provide a dependency array, useEffect will execute after every render of the component. This means that any time your component updates—whether due to state changes, prop changes, or parent component re-renders—the effect will run again. This approach can be useful for debugging but may lead to performance issues if overused.
+jsx
+useEffect(() => {
+  console.log("Effect runs after every render");
+});
+
+By passing an empty array ([]) as the dependency array, useEffect runs only once, right after the component mounts. This is ideal for tasks like fetching data or setting up subscriptions, as it ensures the effect runs a single time when the component is first rendered.
+jsx
+useEffect(() => {
+  console.log("Effect runs only once on mount");
+}, []);
+
+When you include specific variables (state or props) in the dependency array, useEffect runs only when those variables change. This allows you to control when the effect should re-run based on changes to particular pieces of data.
+jsx
+useEffect(() => {
+  console.log("Effect runs because 'count' changed");
+}, [count]);
+
+useEffect can return a cleanup function that runs before the component unmounts or before the effect re-runs due to a dependency change. This is useful for cleaning up resources like timers or event listeners to prevent memory leaks.
+jsx
+useEffect(() => {
+  console.log(`Effect runs for count: ${count}`);
+
+  return () => {
+    console.log(`Cleanup for previous count: ${count}`);
+  };
+}, [count]);
+*Basically:*
+- *No dependency array:* Runs after every render.
+- *Empty array ([]):* Runs only once when the component mounts.
+- *Specific dependencies:* Runs when those dependencies change.
+- *Cleanup function:* Executes before unmounting or before the effect re-runs.
+Understanding these patterns helps you control when side effects occur in your React components, ensuring they behave as intended.
+
 ## Prompt 4
 
 The component below makes a mistake when using useEffect. When running this code, we will get an error from React! Please fix this code.
@@ -73,3 +109,31 @@ const DogDisplay = () => {
 After fixing the code provide and explanation to what you fixed and why it needed to be fixed.
 
 ### Response 4
+
+The issue with the original code is that you can’t directly use an async function inside useEffect. React expects the function passed to useEffect to be synchronous, but when you make it async, it returns a promise, which causes an error.
+To fix this, I moved the async function inside the useEffect and called it from there, so everything works properly.
+Here’s the fixed code:
+js
+const DogDisplay = () => {
+  const [imgSrc, setImgSrc] = useState(
+    "https://images.dog.ceo/breeds/hound-english/n02089973_612.jpg"
+  );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("https://dog.ceo/api/breeds/image/random");
+        if (!response.ok) throw new Error(`Error: ${response.status}`);
+        const data = await response.json();
+        setImgSrc(data.message);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  return <img src={imgSrc} alt="Random Dog" />;
+};
+
+Instead of making the useEffect callback itself async, I created an inner function called fetchData that's async and then called it. This fix ensures that React handles the effect correctly and doesn't run into issues with promises.
